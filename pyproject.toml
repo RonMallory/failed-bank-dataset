@@ -19,6 +19,7 @@ ipykernel = "^6.25.1"
 missingno = "^0.5.2"
 seaborn = "^0.12.2"
 flake8 = "^6.1.0"
+mypy = "^1.5.1"
 
 [build-system]
 requires = ["poetry-core"]
