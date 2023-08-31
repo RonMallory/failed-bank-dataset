@@ -1,0 +1,45 @@
+{
+    "title": "FDIC Failed bank dataset",
+    "subtitle": "This data set contains the fdic public data on fdic institutions.",
+    "description": "This dataset provides an overview of financial institutions regulated by the Federal Deposit Insurance Corporation (FDIC), emphasizing banks that have failed. Ideal for financial analysts, policymakers, and researchers. Data Source: Compiled from FDIC official records (https://www.fdic.gov/). Data Columns: 'bankName' (Name of the bank), 'status' (Active or Failed), 'location' (Geographic location), 'assets' (Total Assets), 'failureDate' (Date of failure, if applicable), 'acquiringInstitution' (Acquiring institution, if applicable). Usage: Suitable for academic research, financial market analysis, policy formulation, and educational purposes.",
+    "id": "ronmallory/fdic-failed-bank-dataset",
+    "licenses": [
+        {
+            "name": "apache-2.0"
+        }
+    ],
+    "keywords": [
+        "beginner"
+    ],
+    "annotations": {
+        "maintainer": "Ron Mallory",
+        "source": "https://banks.data.fdic.gov/api/"
+
+    },
+    "resources": [
+        {
+            "path": "bank_failures.csv",
+            "description": "Get detail on historical bank failures from 1934 to present."
+        },
+        {
+            "path": "events_definitions.csv",
+            "description": "CSV definition file for bank events"
+        },
+        {
+            "path": "institutions.csv",
+            "description": "Get detail on all FDIC-insured institutions."
+        },
+        {
+            "path": "institutions_definitions.csv",
+            "description": "CSV definition file for bank institutions"
+        },
+        {
+            "path": "locations.csv",
+            "description": "Get location details on all FDIC-insured institutions."
+        },
+        {
+            "path": "locations_definitions.csv",
+            "description": "CSV definition file for bank locations"
+        }
+    ]
+}
