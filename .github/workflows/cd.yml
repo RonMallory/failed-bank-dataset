@@ -1,0 +1,59 @@
+name: CD
+
+on:
+    push:
+      branches: [ main ]
+      paths:
+        - 'src/**'
+    schedule:
+      - cron: '30 9 * * *'
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.11
+
+    - name: Install Poetry
+      run: |
+        curl -sSL https://install.python-poetry.org | python3 -
+
+    - name: Cache Poetry dependencies
+      uses: actions/cache@v2
+      with:
+        path: ~/.cache/pypoetry
+        key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-poetry-
+
+    - name: Install Dependencies
+      run: poetry install
+
+    - name: Run Black
+      run: poetry run black .
+
+    - name: Run flake8
+      run: poetry run flake8 .
+
+    - name: Run mypy
+      run: poetry run mypy .
+
+    - name: Run Application
+      run: poetry run python src/main.py
+
+    - name: Install Kaggle CLI
+      run: pip install kaggle
+
+    - name: Create Kaggle Dataset
+      run: |
+        kaggle datasets version -p ./data -m "${{ github.event.head_commit.message }}"
+      env:
+        KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
+        KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}

@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "fdic-failed-bank-dataset"
+version = "0.1.0"
+description = "Application that creates a kaggle dataset from FDIC public data for use in machine learning."
+authors = ["Ron Mallory <ronnymallory@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+packages = [{include = "src"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+requests = "^2.31.0"
+pandas = "^2.0.3"
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.7.0"
+pre-commit = "^3.3.3"
+ipykernel = "^6.25.1"
+missingno = "^0.5.2"
+seaborn = "^0.12.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
