@@ -3,7 +3,7 @@ import requests
 import logging
 from data_transform import save_data
 from typing import List, Dict, Union, Optional, Mapping
-from file_ops import setup_directory
+from file_ops import setup_directory, get_data_directory
 from urllib.parse import urlencode, urlunparse, urlparse
 
 
@@ -111,8 +111,10 @@ def download_files(urls: List[str], output_file_name: Optional[str] = None) -> N
         None
     """
 
+    # Get data directory
+    abs_data_dir = get_data_directory()
     # Use the setup_directory function to handle directory creation
-    destination_dir = setup_directory()
+    destination_dir = setup_directory(abs_data_dir)
 
     for url in urls:
         try:
@@ -163,8 +165,10 @@ def download_files_with_pagination(
     all_data = []
     params["limit"] = str(limit)
 
+    # get data directory
+    abs_data_dir = get_data_directory()
     # Setup destination directory and path
-    destination_dir = setup_directory()
+    destination_dir = setup_directory(abs_data_dir)
     file_name = params.get("filename", "default_file_name")
     destination_path = os.path.join(destination_dir, f"{file_name}.{output_format}")
 

@@ -1,4 +1,5 @@
 import json
+import yaml
 import logging
 import os
 import pandas as pd
@@ -43,7 +44,7 @@ def fdic_json_to_csv(files: List[str]) -> None:
 
     for file_path in files:
         # Log the start of the conversion process for this file
-        logging.info(f"Starting conversion of {file_path} to CSV.")
+        logging.info(f"Starting conversion of {os.path.basename(file_path)} to CSV.")
 
         try:
             # Open and read the JSON file
@@ -64,8 +65,71 @@ def fdic_json_to_csv(files: List[str]) -> None:
             os.remove(file_path)
 
             # Log the completion of the conversion process for this file
-            logging.info(f"Completed conversion of {file_path} to CSV.")
+            logging.info(
+                f"Completed conversion of {os.path.basename(file_path)} to CSV."
+            )
 
         except Exception as e:
             # Log any exceptions that occur during the conversion process
-            logging.error(f"An error occurred while converting {file_path} to CSV: {e}")
+            logging.error(
+                f"An error occurred while converting {os.path.basename(file_path)} to CSV: {e}"
+            )
+
+
+def fdic_yaml_to_csv(files: List[str]) -> None:
+    """
+    Converts specific properties in multiple YAML files to individual CSV files.
+
+    This function reads each YAML file in the provided list, navigates to the 'properties'
+    section inside the 'data' key, and extracts 'name', 'title', and 'description'
+    attributes from each property. It then saves these extracted properties to individual CSV files.
+
+    Parameters:
+    - files (List[str]): A list of paths to the YAML files to be read.
+
+    Returns:
+    - None: The function saves the extracted data to individual CSV files and returns None.
+
+    Logging:
+    - Logs error if any file is not found or YAML parsing fails.
+    - Logs info upon successful saving of each CSV file.
+    """
+    for file_path in files:
+        try:
+            with open(file_path, "r") as f:
+                data = yaml.safe_load(f)
+        except FileNotFoundError:
+            logging.error(f"File {os.path.basename(file_path)} not found.")
+            continue
+        except yaml.YAMLError as e:
+            logging.error(
+                f"Error parsing YAML file at {os.path.basename(file_path)}: {e}"
+            )
+            continue
+
+        properties_data = (
+            data.get("properties", {}).get("data", {}).get("properties", {})
+        )
+        extracted_properties = []
+
+        for name, attributes in properties_data.items():
+            title = attributes.get("title", "N/A")
+            description = attributes.get("description", "N/A")
+            extracted_properties.append(
+                {
+                    "name": name,
+                    "title": title,
+                    "description": description,
+                }
+            )
+
+        try:
+            df = pd.DataFrame(extracted_properties)
+            csv_path = file_path.replace(".yaml", ".csv")
+            df.to_csv(csv_path, index=False)
+            logging.info(f"Saved to {os.path.basename(csv_path)}")
+            os.remove(file_path)
+        except Exception as e:
+            logging.error(
+                f"Error creating DataFrame or writing to CSV for {file_path}: {e}"
+            )

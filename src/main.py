@@ -42,6 +42,10 @@ def main() -> None:
             "endpoint": config.FAILURES_ENDPOINT,
             "params": config.FAILURES_PARAMS,
         },
+        {
+            "endpoint": config.FAILURES_DEFINITION_ENDPOINT,
+            "params": {},
+        },
     ]
 
     # Run data collection pipeline
