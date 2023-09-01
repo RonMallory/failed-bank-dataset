@@ -1,85 +1,88 @@
 import config
 import os
 import logging
-from typing import List
 
 
-def clean_data_directory(dir: str) -> None:
+def get_data_directory(data_dir: str = config.DATA_DIR) -> str:
     """
-    Cleans the data directory by removing all files in the directory.
+    Get the data directory specified in the config.
 
     Parameters:
-        dir (str): The directory to clean.
+        data_dir (str): The path relative to the directory containing JSON files.
 
     Returns:
-        None
+        str: The full path of the data directory.
     """
-    # Get the directory of the current script
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-
-    # Define the destination directory and file path
-    destination_dir = os.path.join(script_dir, dir)
-
-    # Create the destination folder if it doesn't exist
-    if not os.path.exists(destination_dir):
-        os.makedirs(destination_dir)
-        logging.info(f"Created directory: {destination_dir}")
-
-    # Remove all files in the directory
-    for file in os.listdir(destination_dir):
-        file_path = os.path.join(destination_dir, file)
-        os.remove(file_path)
-        logging.info(f"Removed {file_path}")
-
-    logging.info(f"Successfully cleaned {destination_dir}")
-
-
-def setup_directory() -> str:
-    """
-    Set up the destination directory for storing data files.
-
-    This function will create the directory specified in the config.DATA_DIR
-    if it doesn't already exist.
-
-    Returns:
-        str: The full path of the destination directory.
-    """
-
     # Get the absolute path of the script's directory
     script_dir = os.path.dirname(os.path.abspath(__file__))
 
     # Combine it with the data directory specified in the config
     destination_dir = os.path.join(script_dir, config.DATA_DIR)
 
-    # Create the directory if it doesn't exist
-    if not os.path.exists(destination_dir):
-        os.makedirs(destination_dir)
-        logging.info(f"Created directory: {destination_dir}")
-
     return destination_dir
 
 
-def get_json_files_in_data_dir(data_dir: str) -> List[str]:
+def clean_data_directory(abs_data_dir: str) -> None:
     """
-    Get a list of all JSON files in the specified data directory.
+    Cleans the data directory by removing all files in the directory.
 
     Parameters:
-        data_dir (str): The path to the directory containing JSON files.
+        abs_data_dir (str): The absolute path to the directory containing data files.
 
     Returns:
-        List[str]: A list of full paths to JSON files in the directory.
+        None
     """
-    # Get the absolute path of the directory where the script is located
-    script_dir = os.path.dirname(os.path.abspath(__file__))
+    logging.info(f"Cleaning {abs_data_dir} directory.")
 
-    # Join script directory with the data directory
-    abs_data_dir = os.path.join(script_dir, data_dir)
+    # Create the destination folder if it doesn't exist
+    if not os.path.exists(abs_data_dir):
+        setup_directory(abs_data_dir)
 
-    # List all JSON files in the data directory
-    json_files = [
+    # Remove all files in the directory
+    for file in os.listdir(abs_data_dir):
+        file_path = os.path.join(abs_data_dir, file)
+        os.remove(file_path)
+        logging.info(f"Removed {os.path.basename(file_path)}")
+
+    logging.info(f"Successfully cleaned {abs_data_dir}")
+
+
+def setup_directory(abs_data_dir: str) -> str:
+    """
+    Set up the destination directory for storing data files.
+
+    This function will create the directory specified in the config.DATA_DIR
+    if it doesn't already exist.
+
+    Parameters:
+        abs_data_dir (str): The absolute path to the directory containing data files.
+
+    Returns:
+        str: The full path of the destination directory.
+    """
+
+    # Create the directory if it doesn't exist
+    if not os.path.exists(abs_data_dir):
+        os.makedirs(abs_data_dir)
+        logging.info(f"Created directory: {abs_data_dir}")
+
+    return abs_data_dir
+
+
+def get_files_in_data_dir(abs_data_dir: str, file_extension: str) -> list:
+    """
+    Returns a list of all files in the data directory with the given file extension.
+
+    Parameters:
+        abs_data_dir (str): The absolute path to the data directory.
+        file_extension (str): The file extension to filter by (e.g., 'json', 'csv', 'txt').
+
+    Returns:
+        list: A list of file paths matching the given extension.
+    """
+
+    return [
         os.path.join(abs_data_dir, file)
         for file in os.listdir(abs_data_dir)
-        if file.endswith(".json")
+        if file.endswith(f".{file_extension}")
     ]
-
-    return json_files

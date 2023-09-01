@@ -1,10 +1,14 @@
-from file_ops import get_json_files_in_data_dir, clean_data_directory
+from file_ops import (
+    get_files_in_data_dir,
+    clean_data_directory,
+    get_data_directory,
+)
 from api_utils import (
     construct_url,
     download_files,
     download_files_with_pagination,
 )
-from data_transform import fdic_json_to_csv
+from data_transform import fdic_json_to_csv, fdic_yaml_to_csv
 import config
 import logging
 from typing import Dict, List, Optional
@@ -13,7 +17,9 @@ from typing import Dict, List, Optional
 class FDICDataPipeline:
     def __init__(self, base_url: str):
         self.base_url = base_url
-        clean_data_directory(config.DATA_DIR)
+        self.abs_data_dir = get_data_directory(config.DATA_DIR)
+
+        clean_data_directory(self.abs_data_dir)
 
     def run_data_collection_pipeline(
         self, endpoint: str, params: Dict[str, str]
@@ -67,8 +73,16 @@ class FDICDataPipeline:
     def run_data_transformation_pipeline(self) -> None:
         logging.info("Starting Data Pipeline.")
 
-        # get all .json files files in config.DATA_DIR
-        files = get_json_files_in_data_dir(config.DATA_DIR)
-        fdic_json_to_csv(files)
+        logging.info("Transforming JSON files to CSV files.")
+        # Get all JSON Files.
+        json_files = get_files_in_data_dir(self.abs_data_dir, "json")
 
+        # Transform JSON files to CSV files.
+        fdic_json_to_csv(json_files)
+
+        logging.info("Transforming YAML files to CSV files.")
+        # Get all YAML Files.
+        yaml_files = get_files_in_data_dir(self.abs_data_dir, "yaml")
+        # Transform YAML files to CSV files.
+        fdic_yaml_to_csv(yaml_files)
         logging.info("Completed Data Pipeline endpoint.")

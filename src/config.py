@@ -13,6 +13,7 @@ FAILURES_PARAMS = {
     "download": "false",
     "filename": "bank_failures",
 }
+FAILURES_DEFINITION_ENDPOINT = "/docs/failure_properties.yaml"
 
 LOCATIONS_ENDPOINT = "/api/locations"
 LOCATIONS_PARAMS = {

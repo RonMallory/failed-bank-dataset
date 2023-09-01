@@ -40,6 +40,10 @@
         {
             "path": "locations_definitions.csv",
             "description": "CSV definition file for bank locations"
+        },
+        {
+            "path": "failure_properties.csv",
+            "description": "/failures api definitions file converted from yaml to csv."
         }
     ]
 }

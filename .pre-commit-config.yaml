@@ -21,7 +21,7 @@ repos:
     hooks:
     -   id: mypy
         args: ['--ignore-missing-imports', '--follow-imports=skip']
-        additional_dependencies: ['types-requests']
+        additional_dependencies: ['types-requests','types-PyYAML']
   - repo: https://github.com/pycqa/flake8
     rev: 6.1.0
     hooks:
