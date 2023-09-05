@@ -1,6 +1,6 @@
 import logging
 from fdic_datapipeline import FDICDataPipeline
-from get_dataset_metadata import get_dataset_metadata
+from get_dataset_metadata import gen_kaggle_metadata
 import config
 
 # Get the logging level from the config
@@ -55,7 +55,7 @@ def main() -> None:
     pipeline.run_data_transformation_pipeline()
 
     # Run dataset-metadata.json generation
-    get_dataset_metadata(config.METADATA_FILE)
+    gen_kaggle_metadata()
 
 
 if __name__ == "__main__":

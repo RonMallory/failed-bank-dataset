@@ -8,7 +8,12 @@ from api_utils import (
     download_files,
     download_files_with_pagination,
 )
-from data_transform import fdic_json_to_csv, fdic_yaml_to_csv
+from data_transform import (
+    fdic_json_to_csv,
+    fdic_yaml_to_csv,
+    bank_failures_transformations,
+)
+import os
 import config
 import logging
 from typing import Dict, List, Optional
@@ -83,6 +88,17 @@ class FDICDataPipeline:
         logging.info("Transforming YAML files to CSV files.")
         # Get all YAML Files.
         yaml_files = get_files_in_data_dir(self.abs_data_dir, "yaml")
+
         # Transform YAML files to CSV files.
         fdic_yaml_to_csv(yaml_files)
+
+        # file specific transformations
+        logging.info("Transforming bank_failures.csv file.")
+
+        bank_failures_transformations(
+            bank_failures_path=os.path.join(self.abs_data_dir, "bank_failures.csv"),
+            failure_properties_path=os.path.join(
+                self.abs_data_dir, "failure_properties.csv"
+            ),
+        )
         logging.info("Completed Data Pipeline endpoint.")
