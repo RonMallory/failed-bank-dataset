@@ -180,8 +180,8 @@ def bank_failures_transformations(
         # Create a mapping dictionary from the 'failure_properties' DataFrame
         column_mapping = dict(
             zip(
-                failures_properties["title"],
                 failures_properties["name"],
+                failures_properties["title"],
             )
         )
 
