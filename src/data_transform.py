@@ -3,7 +3,7 @@ import yaml
 import logging
 import os
 import pandas as pd
-from typing import List, Dict
+from typing import List, Dict, Optional
 
 
 def save_data(
@@ -115,11 +115,13 @@ def fdic_yaml_to_csv(files: List[str]) -> None:
         for name, attributes in properties_data.items():
             title = attributes.get("title", "N/A")
             description = attributes.get("description", "N/A")
+            dtype = str(attributes.get("type", "N/A"))
             extracted_properties.append(
                 {
                     "name": name,
                     "title": title,
                     "description": description,
+                    "type": dtype,
                 }
             )
 
@@ -133,3 +135,72 @@ def fdic_yaml_to_csv(files: List[str]) -> None:
             logging.error(
                 f"Error creating DataFrame or writing to CSV for {file_path}: {e}"
             )
+
+
+def bank_failures_transformations(
+    bank_failures_path: str,
+    failure_properties_path: str,
+    output_path: Optional[str] = None,
+) -> None:
+    """
+    Transforms the column names of a bank failures CSV file based on a properties CSV file.
+
+    Parameters:
+    - bank_failures_path (str): Path to the CSV file containing bank failure data.
+    - failure_properties_path (str): Path to the CSV file containing column name mappings.
+    - output_path (Optional[str]): Optional path to save the transformed CSV file.
+                                   If not provided, the original file will be overwritten.
+
+    Returns:
+    None: The function saves the transformed DataFrame to a CSV file.
+
+    Raises:
+    - FileNotFoundError: If either of the input CSV files is not found.
+    - KeyError: If expected columns are missing in the input DataFrames.
+    """
+    try:
+        # Load both CSV files into Pandas DataFrames
+        failures = pd.read_csv(bank_failures_path)
+        failures_properties = pd.read_csv(failure_properties_path)
+
+        # Check for required columns
+        if "title" not in failures_properties or "name" not in failures_properties:
+            raise KeyError(
+                "The 'failure_properties' DataFrame must contain 'title' and 'name' columns."
+            )
+
+        # Make all values in the title lowercase and replace spaces with underscores
+        failures_properties["title"] = (
+            failures_properties["title"].str.lower().str.replace(" ", "_")
+        )
+
+        # Update the original csv file
+        failures_properties.to_csv(failure_properties_path, index=False)
+
+        # Create a mapping dictionary from the 'failure_properties' DataFrame
+        column_mapping = dict(
+            zip(
+                failures_properties["title"],
+                failures_properties["name"],
+            )
+        )
+
+        # Rename the columns in the 'bank_failures' DataFrame
+        failures.rename(columns=column_mapping, inplace=True)
+
+        # Save the updated DataFrame to a CSV file
+        if output_path:
+            failures.to_csv(output_path, index=False)
+            logging.info(
+                f"Transformed DataFrame saved to {os.path.basename(output_path)}"
+            )
+        else:
+            failures.to_csv(bank_failures_path, index=False)
+            logging.info(
+                f"Transformed DataFrame saved to {os.path.basename(bank_failures_path)}"
+            )
+
+    except FileNotFoundError as e:
+        logging.error(f"File not found: {e.filename}")
+    except KeyError as e:
+        logging.error(f"KeyError: {e}")
