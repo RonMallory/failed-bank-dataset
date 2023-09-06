@@ -4,7 +4,7 @@ LOGGING_LEVEL = "INFO"
 DATA_DIR = "../data"
 METADATA_FILE = "./dataset-metadata.json"
 KAGGLE_METADATA = {
-    "title": "Comprehensive FDIC Public Data on U.S. Bank Institutions and Failures",
+    "title": "FDIC Data for U.S. Bank Institutions and Failures",
     "subtitle": "This data set contains the fdic public data on fdic institutions.",
     "id": "ronmallory/fdic-failed-bank-dataset",
     "licenses": [{"name": "apache-2.0"}],
@@ -102,3 +102,62 @@ SUMMERY_PARAMS = {
     "download": "false",
     "filename": "summary",
 }
+
+FAILURE_PROPERTY_TYPE_MAP = [
+    {
+        "title": "cert",
+        "type": "numeric",
+    },
+    {
+        "title": "charter_class",
+        "type": "string",
+    },
+    {
+        "title": "effective_date",
+        "type": "datetime",
+    },
+    {
+        "title": "estimated_loss",
+        "type": "decimal",
+    },
+    {
+        "title": "fin",
+        "type": "integer",
+    },
+    {
+        "title": "institution_name",
+        "type": "string",
+    },
+    {
+        "title": "insurance_fund",
+        "type": "string",
+    },
+    {
+        "title": "location",
+        "type": "string",
+    },
+    {
+        "title": "resolution",
+        "type": "string",
+    },
+    {
+        "title": "state",
+        "type": "province",
+    },
+    {
+        "title": "total_assets",
+        "type": "decimal",
+    },
+    {
+        "title": "total_deposits",
+        "type": "decimal",
+    },
+    {
+        "title": "transaction_type",
+        "type": "string",
+    },
+    {
+        "title": "year",
+        "type": "integer",
+    },
+]

@@ -1,3 +1,4 @@
+from config import FAILURE_PROPERTY_TYPE_MAP
 import json
 import yaml
 import logging
@@ -128,6 +129,7 @@ def fdic_yaml_to_csv(files: List[str]) -> None:
         try:
             df = pd.DataFrame(extracted_properties)
             csv_path = file_path.replace(".yaml", ".csv")
+            # sort by name in abc order
             df.to_csv(csv_path, index=False)
             logging.info(f"Saved to {os.path.basename(csv_path)}")
             os.remove(file_path)
@@ -135,6 +137,33 @@ def fdic_yaml_to_csv(files: List[str]) -> None:
             logging.error(
                 f"Error creating DataFrame or writing to CSV for {file_path}: {e}"
             )
+
+
+def update_dataframe_generic(
+    df: pd.DataFrame,
+    update_data: List[Dict[str, str]],
+    key_col: str = "title",
+    value_col: str = "type",
+) -> pd.DataFrame:
+    """
+    Update a specified column in the DataFrame based on the provided update_data.
+
+    Parameters:
+    - df (DataFrame): The DataFrame to be updated.
+    - update_data (List[Dict[str, str]]): The list of dictionaries containing the updated values.
+    - key_col (str): The column in the DataFrame to use as the key for matching update_data.
+    - value_col (str): The column in the DataFrame to be updated.
+
+    Returns:
+    - DataFrame: The updated DataFrame.
+    """
+    # Create a dictionary to map the key to the value to be updated
+    update_map = {entry[key_col].lower(): entry[value_col] for entry in update_data}
+
+    # Update the DataFrame
+    df[value_col] = df[key_col].map(update_map).fillna(df[value_col])
+
+    return df
 
 
 def bank_failures_transformations(
@@ -174,6 +203,14 @@ def bank_failures_transformations(
             failures_properties["title"].str.lower().str.replace(" ", "_")
         )
 
+        # Sort failure properties by title
+        failures_properties.sort_values(by="title", inplace=True)
+
+        # Update failure properties type values from config
+        failures_properties = update_dataframe_generic(
+            failures_properties, FAILURE_PROPERTY_TYPE_MAP
+        )
+
         # Update the original csv file
         failures_properties.to_csv(failure_properties_path, index=False)
 
@@ -187,6 +224,12 @@ def bank_failures_transformations(
 
         # Rename the columns in the 'bank_failures' DataFrame
         failures.rename(columns=column_mapping, inplace=True)
+
+        # Drop 'ID' column
+        failures.drop(columns=["ID"], inplace=True)
+
+        # reorder columns by name
+        failures = failures.reindex(sorted(failures.columns), axis=1)
 
         # Save the updated DataFrame to a CSV file
         if output_path:
