@@ -22,23 +22,6 @@ def main() -> None:
     # Define the pipeline configurations
     pipeline_configs = [
         {
-            "endpoint": config.LOCATIONS_DEFINITION_ENDPOINT,
-            "params": {},
-        },
-        {"endpoint": config.EVENTS_DEFINITION_ENDPOINT, "params": {}},
-        {
-            "endpoint": config.INSTITUTIONS_DEFINITION_ENDPOINT,
-            "params": {},
-        },
-        {
-            "endpoint": config.LOCATIONS_ENDPOINT,
-            "params": config.LOCATIONS_PARAMS,
-        },
-        {
-            "endpoint": config.INSTITUTIONS_ENDPOINT,
-            "params": config.INSTITUTIONS_PARAMS,
-        },
-        {
             "endpoint": config.FAILURES_ENDPOINT,
             "params": config.FAILURES_PARAMS,
         },
